@@ -1,0 +1,71 @@
+<!-- Currency Converter Form (HTML only, no CSS or JS) -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Currency Converter</title>
+  </head>
+  <body>
+    <h1>Currency Converter</h1>
+    <form id="converter-form">
+      <label for="from">Convert from:</label>
+      <select id="from" name="from">
+        <option value="USD">USD</option>
+        <option value="JPY">JPY</option>
+        <option value="EUR">EUR</option>
+        <option value="RUB">RUB</option>
+        <option value="GBP">GBP</option>
+      </select>
+      <br><br>
+      <label for="to">Convert to:</label>
+      <select id="to" name="to">
+        <option value="USD">USD</option>
+        <option value="JPY">JPY</option>
+        <option value="EUR">EUR</option>
+        <option value="RUB">RUB</option>
+        <option value="GBP">GBP</option>
+      </select>
+      <br><br>
+      <label for="amount">Amount:</label>
+      <input type="number" id="amount" name="amount" step="any">
+      <br><br>
+      <input type="submit" value="Convert">
+    </form>
+    <h2 id="result"></h2>
+
+    <h3>Conversion History</h3>
+    <ul id="history"></ul>
+
+    <script>
+      // Currency rates (same as your session.js)
+      const currencies = {
+        USD: 1.0,
+        JPY: 113.5,
+        EUR: 0.89,
+        RUB: 74.36,
+        GBP: 0.75
+      };
+
+      document.getElementById('converter-form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent form from reloading the page
+
+        const from = document.getElementById('from').value;
+        const to = document.getElementById('to').value;
+        const amount = parseFloat(document.getElementById('amount').value);
+
+        if (currencies[from] && currencies[to] && !isNaN(amount)) {
+          const converted = (amount * currencies[to]) / currencies[from];
+          const resultText = `${amount} ${from} = ${converted.toFixed(2)} ${to}`;
+          document.getElementById('result').textContent = resultText;
+
+          // Add to history
+          const historyList = document.getElementById('history');
+          const li = document.createElement('li');
+          li.textContent = resultText;
+          historyList.appendChild(li);
+        } else {
+          document.getElementById('result').textContent = "Invalid input or currency not found!";
+        }
+      });
+    </script>
+  </body>
+</html>
