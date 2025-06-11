@@ -1,4 +1,3 @@
-<!-- Currency Converter Form (HTML only, no CSS or JS) -->
 <!DOCTYPE html>
 <html>
   <head>
@@ -36,34 +35,36 @@
     <ul id="history"></ul>
 
     <script>
-      // Currency rates (same as your session.js)
-      const currencies = {
-        USD: 1.0,
-        JPY: 113.5,
-        EUR: 0.89,
-        RUB: 74.36,
-        GBP: 0.75
-      };
-
-      document.getElementById('converter-form').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent form from reloading the page
+      document.getElementById('converter-form').addEventListener('submit', async function(event) {
+        event.preventDefault();
 
         const from = document.getElementById('from').value;
         const to = document.getElementById('to').value;
         const amount = parseFloat(document.getElementById('amount').value);
 
-        if (currencies[from] && currencies[to] && !isNaN(amount)) {
-          const converted = (amount * currencies[to]) / currencies[from];
-          const resultText = `${amount} ${from} = ${converted.toFixed(2)} ${to}`;
-          document.getElementById('result').textContent = resultText;
+        const apiKey = "bd0c9cac1d3d614a559e8cd1"; // Your API key
+        const url = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/${from}`;
 
-          // Add to history
-          const historyList = document.getElementById('history');
-          const li = document.createElement('li');
-          li.textContent = resultText;
-          historyList.appendChild(li);
-        } else {
-          document.getElementById('result').textContent = "Invalid input or currency not found!";
+        try {
+          const response = await fetch(url);
+          const data = await response.json();
+
+          console.log("API Response:", data); // Debugging line
+
+          if (data.result === "success" && data.conversion_rates[to]) {
+            const converted = amount * data.conversion_rates[to];
+            document.getElementById('result').textContent = `${amount} ${from} = ${converted.toFixed(2)} ${to}`;
+
+            // Add to history
+            const li = document.createElement('li');
+            li.textContent = `${amount} ${from} = ${converted.toFixed(2)} ${to}`;
+            document.getElementById('history').appendChild(li);
+          } else {
+            document.getElementById('result').textContent = "Currency not found!";
+          }
+        } catch (error) {
+          document.getElementById('result').textContent = "Error fetching exchange rates!";
+          console.error("Fetch error:", error);
         }
       });
     </script>
